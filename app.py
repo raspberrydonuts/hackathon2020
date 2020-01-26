@@ -19,14 +19,7 @@ csrf.init_app(app)
 
 @app.route('/')
 def default():
-    if request.method == 'POST':
-        # handle response from below render
-        loc = request.values.get('location') # Your location 
-        # if fetch location failed, redirect them to the form to enter
-        # custom location
-        redirect('/index?location='+loc)
-    else:
-        return render_template("fetch_location.html") # execute javascript with onload
+    return render_template("index.html") # execute javascript with onload
 
 @app.route('/index')
 def index():
