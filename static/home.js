@@ -1,51 +1,30 @@
-// Note: This example requires that you consent to location sharing when
-        // prompted by your browser. If you see the error "The Geolocation service
-        // failed.", it means you probably did not give permission for the browser to
-        // locate you.
-        var map, infoWindow;
-        function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: -34.397, lng: 150.644 },
-                zoom: 6
-            });
-            infoWindow = new google.maps.InfoWindow;
+function initMap() {
+    // Checks if navigator is enabled for the browser
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            // Stores the position as latitude and longitude
+            var pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
 
-            // Try HTML5 geolocation.
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var pos = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    var geocoder = new google.maps.Geocoder();
-                    var latLng = new google.maps.LatLng(pos.lat, pos.lng);
-                    console.log(pos)
-                    if (geocoder) {
-                        geocoder.geocode({ 'latLng': latLng }, function (results, status) {
-                            if (status == google.maps.GeocoderStatus.OK) {
-                                console.log(results[0].formatted_address);
-                                $('#address').html('Address:' + results[0].formatted_address);
-                            }
-                            else {
-                                $('#address').html('Geocoding failed: ' + status);
-                                console.log("Geocoding failed: " + status);
-                            }
-                        }); //geocoder.geocode()
+            // setting geocoder to be able to get the address using latitude and longitude
+            var geocoder = new google.maps.Geocoder();
+            var latLng = new google.maps.LatLng(pos.lat, pos.lng);
+
+            if (geocoder) {
+                geocoder.geocode({ 'latLng': latLng }, function (results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        console.log(results[0].formatted_address);
                     }
-                },
-        function() {
-                handleLocationError(true, infoWindow, map.getCenter());
-            });
-        } else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
-        }
-      }
+                    else {
+                        console.log("Geocoding failed: " + status);
+                    }
+                });
+            }
+        });
+    } else {
+        console.log("Unable to get address")
+    }
+}
 
-        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-            infoWindow.setPosition(pos);
-            infoWindow.setContent(browserHasGeolocation ?
-                'Error: The Geolocation service failed.' :
-                'Error: Your browser doesn\'t support geolocation.');
-            infoWindow.open(map);
-        }
